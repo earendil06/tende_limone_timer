@@ -11,6 +11,16 @@ jobs:
       - checkout
       - run: cp android/local.properties.ci android/local.properties
 
+      - run: ssh-keyscan vps.florentpastor.com >> ~/.ssh/known_hosts
+      - add_ssh_keys:
+          fingerprints:
+            - "25:1a:cb:cd:e7:e9:12:61:3b:2b:b0:9e:c2:0c:2e:c3"
+      - run:
+          name: import secret files
+          command: |
+            scp ubuntu@vps.florentpastor.com:/home/ubuntu/circleci/android/key.properties android/
+            scp ubuntu@vps.florentpastor.com:/home/ubuntu/circleci/android/key.jks /home/cirrus/
+
       - run:
           name: Run Flutter doctor
           command: flutter doctor
