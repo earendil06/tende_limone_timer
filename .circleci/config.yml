@@ -9,7 +9,8 @@ jobs:
 
     steps:
       - checkout
-      - run: cp android/local.properties.ci android/local.properties
+      - run: mv android/local.properties.ci android/local.properties
+      - run: mv android/fastlane/Appfile.ci android/fastlane/Appfile
 
       - run: ssh-keyscan vps.florentpastor.com >> ~/.ssh/known_hosts
       - add_ssh_keys:
@@ -20,6 +21,7 @@ jobs:
           command: |
             scp ubuntu@vps.florentpastor.com:/home/ubuntu/circleci/android/key.properties android/
             scp ubuntu@vps.florentpastor.com:/home/ubuntu/circleci/android/key.jks /home/cirrus/
+            scp ubuntu@vps.florentpastor.com:/home/ubuntu/circleci/android/api-google-play.json /home/cirrus/
 
       - run:
           name: Run Flutter doctor
@@ -29,9 +31,14 @@ jobs:
           name: Run the application tests
           command: flutter test
 
-      - run:
-          name: Build the Android version
-          command: flutter build appbundle
+#      - run:
+#          name: Build the Android version
+#          command: flutter build apk
 
-      - store_artifacts:
-          path: build/app/outputs/bundle/release/app-release.aab
+      - run:
+          name: Install fastlane
+          command: cd android && bundler install
+
+      - run:
+          name: upload
+          command: cd android && fastlane android deploy
