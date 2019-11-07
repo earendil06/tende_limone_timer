@@ -8,7 +8,7 @@ jobs:
       only: master
 
     steps:
-      - checkout
+      - checkout: post: - cp android/local.properties.ci android/local.properties
 
       - run:
           name: Run Flutter doctor
